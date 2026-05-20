@@ -124,6 +124,13 @@ export default function Dashboard() {
     <div className="dash-card-sub">Porovnaj až 3 vozidlá</div>
   </div>
 </Link>
+<Link href="/map">
+  <div className="dash-card">
+    <div className="dash-card-icon">🗺️</div>
+    <div className="dash-card-title">Mapa vozidiel</div>
+    <div className="dash-card-sub">Nájdi autá vo svojom okolí</div>
+  </div>
+</Link>
           </div>
         </div>
       </div>
