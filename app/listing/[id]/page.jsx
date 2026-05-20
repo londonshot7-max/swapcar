@@ -160,12 +160,9 @@ export default function Listing() {
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-  <span style={{ fontWeight: 600, fontSize: '14px' }}>{seller?.full_name || 'Predajca'}</span>
-  {seller?.verified && <span style={{ background: '#22c55e', borderRadius: '6px', padding: '2px 8px', fontSize: '11px', fontWeight: 700, color: '#fff' }}>✓ Overený</span>}
-</div>
-<div style={{ fontSize: '12px', color: '#7878a0' }}>
-  {avgRating ? `⭐ ${avgRating} (${reviews.length} hodnotení)` : 'Zatiaľ bez hodnotení'}
-</div></div>
+                    <span style={{ fontWeight: 600, fontSize: '14px' }}>{seller?.full_name || 'Predajca'}</span>
+                    {seller?.verified && <span style={{ background: '#22c55e', borderRadius: '6px', padding: '2px 8px', fontSize: '11px', fontWeight: 700, color: '#fff' }}>✓ Overený</span>}
+                  </div>
                   <div style={{ fontSize: '12px', color: '#7878a0' }}>
                     {avgRating ? `⭐ ${avgRating} (${reviews.length} hodnotení)` : 'Zatiaľ bez hodnotení'}
                   </div>
@@ -211,7 +208,6 @@ export default function Listing() {
               )}
             </div>
 
-            {/* REVIEW FORM */}
             {showReviewForm && (
               <div style={{ background: '#0a0a12', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '0.5px solid rgba(255,85,0,0.2)' }}>
                 <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '16px' }}>Tvoje hodnotenie</div>
@@ -238,7 +234,6 @@ export default function Listing() {
               </div>
             )}
 
-            {/* REVIEWS LIST */}
             {reviews.length === 0 ? (
               <div style={{ color: '#7878a0', textAlign: 'center', padding: '40px 0' }}>Zatiaľ žiadne hodnotenia</div>
             ) : (
