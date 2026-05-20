@@ -1,10 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { useAuth } from '../lib/auth-context'
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { user } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -113,7 +115,6 @@ export default function Home() {
         .footer-col a { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; transition: color .2s; }
         .footer-col a:hover { color: var(--text); }
         .footer-bottom { padding: 20px 48px; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
-
         @media (max-width: 768px) {
           .nav { padding: 0 20px; }
           .nav-links { display: none; }
@@ -150,8 +151,17 @@ export default function Home() {
           <Link href="/how">Ako to funguje</Link>
         </div>
         <div className="nav-btns">
-          <Link href="/login"><button className="btn-ghost">Prihlásiť sa</button></Link>
-          <Link href="/register"><button className="btn-primary">Registrovať sa zadarmo</button></Link>
+          {user ? (
+            <>
+              <Link href="/dashboard"><button className="btn-ghost">Dashboard</button></Link>
+              <Link href="/add-listing"><button className="btn-primary">Pridať inzerát</button></Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login"><button className="btn-ghost">Prihlásiť sa</button></Link>
+              <Link href="/register"><button className="btn-primary">Registrovať sa zadarmo</button></Link>
+            </>
+          )}
         </div>
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
           <span style={{transform: menuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none'}}></span>
@@ -167,8 +177,17 @@ export default function Home() {
         <Link href="/exchange" onClick={() => setMenuOpen(false)}>Výmeny</Link>
         <Link href="/how" onClick={() => setMenuOpen(false)}>Ako to funguje</Link>
         <div className="mobile-btns">
-          <Link href="/login" onClick={() => setMenuOpen(false)}><button className="btn-ghost" style={{width:'100%'}}>Prihlásiť sa</button></Link>
-          <Link href="/register" onClick={() => setMenuOpen(false)}><button className="btn-primary" style={{width:'100%',padding:'12px 20px'}}>Registrovať sa zadarmo</button></Link>
+          {user ? (
+            <>
+              <Link href="/dashboard" onClick={() => setMenuOpen(false)}><button className="btn-ghost" style={{width:'100%'}}>Dashboard</button></Link>
+              <Link href="/add-listing" onClick={() => setMenuOpen(false)}><button className="btn-primary" style={{width:'100%',padding:'12px 20px'}}>Pridať inzerát</button></Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setMenuOpen(false)}><button className="btn-ghost" style={{width:'100%'}}>Prihlásiť sa</button></Link>
+              <Link href="/register" onClick={() => setMenuOpen(false)}><button className="btn-primary" style={{width:'100%',padding:'12px 20px'}}>Registrovať sa zadarmo</button></Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -209,42 +228,12 @@ export default function Home() {
           <p className="section-sub">Nie sme ďalší klasický autobazár. Prinášame nový spôsob obchodovania s vozidlami.</p>
         </div>
         <div className="features-grid">
-          <div className="feature-card highlight">
-            <div className="feature-icon">🔨</div>
-            <h3>Dražby v reálnom čase</h3>
-            <p>Nastav počiatočnú cenu a sleduj, ako záujemcovia súperia. Automatické príhozy, odpočítavanie, rezervná cena.</p>
-            <div className="feature-tag">Jedinečné na SK</div>
-          </div>
-          <div className="feature-card highlight">
-            <div className="feature-icon">🔄</div>
-            <h3>Výmena s doplatkom</h3>
-            <p>Navrhni výmenu svojho vozidla za iné. Dohodnte sa na doplatku — obojstranne. Platforma vygeneruje digitálnu zmluvu.</p>
-            <div className="feature-tag">Jedinečné na SK</div>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">🏛️</div>
-            <h3>Showroom komunita</h3>
-            <p>Zdieľaj fotky svojich vozidiel, sleduj ostatných, zbieraj lajky. Tvoja garáž — tvoja identita na platforme.</p>
-            <div className="feature-tag">Komunita</div>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">🔒</div>
-            <h3>Escrow platby</h3>
-            <p>Peniaze sú bezpečne držané platformou do potvrdenia transakcie oboma stranami. Žiadne riziká.</p>
-            <div className="feature-tag">Bezpečnosť</div>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">📋</div>
-            <h3>Digitálna zmluva</h3>
-            <p>Po potvrdení transakcie automaticky generujeme kúpnu zmluvu podľa slovenského práva.</p>
-            <div className="feature-tag">Právna ochrana</div>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">⭐</div>
-            <h3>Hodnotenia predajcov</h3>
-            <p>Každý predajca má verejný profil s hodnoteniami. Vieš s kým obchoduješ ešte pred prvou správou.</p>
-            <div className="feature-tag">Dôveryhodnosť</div>
-          </div>
+          <div className="feature-card highlight"><div className="feature-icon">🔨</div><h3>Dražby v reálnom čase</h3><p>Nastav počiatočnú cenu a sleduj, ako záujemcovia súperia.</p><div className="feature-tag">Jedinečné na SK</div></div>
+          <div className="feature-card highlight"><div className="feature-icon">🔄</div><h3>Výmena s doplatkom</h3><p>Navrhni výmenu svojho vozidla za iné. Platforma vygeneruje digitálnu zmluvu.</p><div className="feature-tag">Jedinečné na SK</div></div>
+          <div className="feature-card"><div className="feature-icon">🏛️</div><h3>Showroom komunita</h3><p>Zdieľaj fotky svojich vozidiel, sleduj ostatných, zbieraj lajky.</p><div className="feature-tag">Komunita</div></div>
+          <div className="feature-card"><div className="feature-icon">🔒</div><h3>Escrow platby</h3><p>Peniaze sú bezpečne držané platformou do potvrdenia transakcie.</p><div className="feature-tag">Bezpečnosť</div></div>
+          <div className="feature-card"><div className="feature-icon">📋</div><h3>Digitálna zmluva</h3><p>Po potvrdení transakcie automaticky generujeme kúpnu zmluvu.</p><div className="feature-tag">Právna ochrana</div></div>
+          <div className="feature-card"><div className="feature-icon">⭐</div><h3>Hodnotenia predajcov</h3><p>Každý predajca má verejný profil s hodnoteniami.</p><div className="feature-tag">Dôveryhodnosť</div></div>
         </div>
       </section>
 
@@ -255,21 +244,9 @@ export default function Home() {
           <h2>Ako to <span className="accent">funguje?</span></h2>
         </div>
         <div className="steps-grid">
-          <div className="step">
-            <div className="step-num">1</div>
-            <h3>Registruj sa zadarmo</h3>
-            <p>Vytvor účet za 2 minúty. Žiadna kreditná karta, žiadne skryté poplatky.</p>
-          </div>
-          <div className="step">
-            <div className="step-num">2</div>
-            <h3>Pridaj vozidlo</h3>
-            <p>Fotky, popis, cena. Vyber si medzi pevnou cenou, dražbou alebo výmenou.</p>
-          </div>
-          <div className="step">
-            <div className="step-num">3</div>
-            <h3>Predaj bezpečne</h3>
-            <p>Escrow platba, digitálna zmluva, hodnotenia. Celý proces pod kontrolou.</p>
-          </div>
+          <div className="step"><div className="step-num">1</div><h3>Registruj sa zadarmo</h3><p>Vytvor účet za 2 minúty. Žiadna kreditná karta.</p></div>
+          <div className="step"><div className="step-num">2</div><h3>Pridaj vozidlo</h3><p>Fotky, popis, cena. Vyber pevnú cenu, dražbu alebo výmenu.</p></div>
+          <div className="step"><div className="step-num">3</div><h3>Predaj bezpečne</h3><p>Escrow platba, digitálna zmluva, hodnotenia.</p></div>
         </div>
       </section>
 
@@ -287,19 +264,17 @@ export default function Home() {
       <footer>
         <div>
           <div className="footer-logo">SWAP<span>CAR</span>.SK</div>
-          <div className="footer-desc">Slovenská platforma pre nákup, predaj a výmenu vozidiel. Dražby, výmeny, komunita.</div>
+          <div className="footer-desc">Slovenská platforma pre nákup, predaj a výmenu vozidiel.</div>
         </div>
         <div className="footer-col">
           <h5>Platforma</h5>
           <Link href="/browse">Prehľadať vozidlá</Link>
           <Link href="/auctions">Živé dražby</Link>
           <Link href="/exchange">Výmeny</Link>
-          <Link href="/showroom">Showroom</Link>
         </div>
         <div className="footer-col">
           <h5>Informácie</h5>
           <Link href="/how">Ako to funguje</Link>
-          <Link href="/pricing">Cenník</Link>
           <Link href="/faq">FAQ</Link>
           <Link href="/contact">Kontakt</Link>
         </div>
