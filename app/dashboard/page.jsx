@@ -30,7 +30,7 @@ export default function Dashboard() {
         .dash-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 68px; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
         .dash-content { padding: 60px 48px; }
         .dash-title { font-size: 48px; font-weight: 800; margin-bottom: 8px; }
-        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; }
+        .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1200px; }
         .dash-card { background: #12121e; border-radius: 16px; padding: 32px; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.07); transition: all .2s; }
         .dash-card:hover { border-color: rgba(255,85,0,0.3); transform: translateY(-2px); }
         .dash-card-icon { font-size: 32px; margin-bottom: 16px; }
@@ -87,6 +87,20 @@ export default function Dashboard() {
                 <div className="dash-card-icon">🔨</div>
                 <div className="dash-card-title">Živé dražby</div>
                 <div className="dash-card-sub">Draž autá v reálnom čase</div>
+              </div>
+            </Link>
+            <Link href="/exchange">
+              <div className="dash-card">
+                <div className="dash-card-icon">🔄</div>
+                <div className="dash-card-title">Výmeny</div>
+                <div className="dash-card-sub">Vymeň vozidlo za iné</div>
+              </div>
+            </Link>
+            <Link href="/messages">
+              <div className="dash-card">
+                <div className="dash-card-icon">💬</div>
+                <div className="dash-card-title">Správy</div>
+                <div className="dash-card-sub">Tvoje konverzácie</div>
               </div>
             </Link>
             <Link href="/profile">
