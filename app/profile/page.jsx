@@ -47,7 +47,7 @@ export default function Profile() {
       const { data } = supabase.storage.from('listings').getPublicUrl(path)
       const newUrl = data.publicUrl
       setProfile(p => ({ ...p, avatar_url: newUrl }))
-      await supabase.from('profiles').upsert({ id: user.id, avatar_url: newUrl })
+      await supabase.from('profiles').update({ avatar_url: newUrl }).eq('id', user.id)
     }
     setUploadingAvatar(false)
   }
