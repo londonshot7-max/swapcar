@@ -1,26 +1,28 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/auth-context'
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null)
+  const { user, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.push('/login'); return }
-      setUser(user)
-    }
-    load()
-  }, [])
+    if (!loading && !user) router.push('/login')
+  }, [user, loading])
 
   const logout = async () => {
     await supabase.auth.signOut()
     router.push('/')
   }
+
+  if (loading) return (
+    <div style={{ minHeight: '100vh', background: '#0a0a12', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7878a0' }}>
+      Načítavam...
+    </div>
+  )
 
   return (
     <>
@@ -50,12 +52,13 @@ export default function Dashboard() {
         <nav className="dash-nav">
           <Link href="/"><div style={{ fontSize: '26px', fontWeight: 800 }}>SWAP<span style={{ color: '#ff5500' }}>CAR</span>.SK</div></Link>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Link href="/profile"><button style={{ padding: '8px 20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: '#eeeaf4', cursor: 'pointer' }}>
-              👤 <span className="dash-nav-label">Profil</span>
-            </button></Link>
+            <Link href="/profile">
+              <button style={{ padding: '8px 20px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: '#eeeaf4', cursor: 'pointer' }}>
+                👤 <span className="dash-nav-label">Profil</span>
+              </button>
+            </Link>
             <button onClick={logout} style={{ padding: '8px 20px', borderRadius: '8px', border: 'none', background: '#ff5500', color: '#fff', cursor: 'pointer', fontWeight: 600 }}>
-              <span className="dash-nav-label">Odhlásiť</span>
-              <span style={{ display: 'none' }} className="dash-nav-icon">↩</span>
+              Odhlásiť
             </button>
           </div>
         </nav>

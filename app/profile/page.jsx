@@ -3,30 +3,33 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/auth-context'
 
 export default function Profile() {
   const router = useRouter()
-  const [user, setUser] = useState(null)
+  const { user, loading } = useAuth()
   const [profile, setProfile] = useState({ full_name: '', phone: '', city: '', bio: '', avatar_url: '' })
   const [listings, setListings] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [dataLoading, setDataLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
   useEffect(() => {
+    if (!loading && !user) router.push('/login')
+  }, [user, loading])
+
+  useEffect(() => {
+    if (!user) return
     const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.push('/login'); return }
-      setUser(user)
       const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).single()
       if (prof) setProfile({ full_name: prof.full_name || '', phone: prof.phone || '', city: prof.city || '', bio: prof.bio || '', avatar_url: prof.avatar_url || '' })
       const { data: myListings } = await supabase.from('listings').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
       setListings(myListings || [])
-      setLoading(false)
+      setDataLoading(false)
     }
     load()
-  }, [])
+  }, [user])
 
   const saveProfile = async () => {
     setSaving(true)
@@ -57,7 +60,7 @@ export default function Profile() {
     router.push('/')
   }
 
-  if (loading) return (
+  if (loading || dataLoading) return (
     <div style={{ minHeight: '100vh', background: '#0a0a12', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7878a0' }}>
       Načítavam...
     </div>
@@ -82,8 +85,6 @@ export default function Profile() {
       `}</style>
 
       <div style={{ minHeight: '100vh', background: '#0a0a12', color: '#eeeaf4', fontFamily: 'sans-serif' }}>
-
-        {/* NAV */}
         <nav className="prof-nav">
           <Link href="/"><div style={{ fontSize: '26px', fontWeight: 800 }}>SWAP<span style={{ color: '#ff5500' }}>CAR</span>.SK</div></Link>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -101,7 +102,6 @@ export default function Profile() {
         <div className="prof-content">
           <div className="prof-title">MÔJ<span style={{ color: '#ff5500' }}> PROFIL</span></div>
 
-          {/* FORM */}
           <div className="prof-card" style={{ background: '#12121e', borderRadius: '16px', padding: '32px', border: '0.5px solid rgba(255,255,255,0.07)', marginBottom: '24px' }}>
             <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '24px' }}>Osobné údaje</div>
 
@@ -162,7 +162,6 @@ export default function Profile() {
             </button>
           </div>
 
-          {/* MOJE INZERÁTY */}
           <div className="prof-card" style={{ background: '#12121e', borderRadius: '16px', padding: '32px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <div style={{ fontSize: '16px', fontWeight: 700 }}>Moje inzeráty ({listings.length})</div>
