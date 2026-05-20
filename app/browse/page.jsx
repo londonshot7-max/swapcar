@@ -177,7 +177,8 @@ export default function Browse() {
                       : '🚗'}
                   </div>
                   <div style={{ padding: '20px' }}>
-                    <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>{listing.title}</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>
+                      {listing.verified_seller && <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: 600 }}>✓ Overený predajca</div>}{listing.title}</div>
                     <div style={{ fontSize: '13px', color: '#7878a0', marginBottom: '12px' }}>
                       {listing.year} · {listing.mileage?.toLocaleString()} km · {listing.fuel}
                     </div>

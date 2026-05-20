@@ -159,7 +159,13 @@ export default function Listing() {
                   {seller?.avatar_url ? <img src={seller.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
                 </div>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: '14px' }}>{seller?.full_name || 'Predajca'}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+  <span style={{ fontWeight: 600, fontSize: '14px' }}>{seller?.full_name || 'Predajca'}</span>
+  {seller?.verified && <span style={{ background: '#22c55e', borderRadius: '6px', padding: '2px 8px', fontSize: '11px', fontWeight: 700, color: '#fff' }}>✓ Overený</span>}
+</div>
+<div style={{ fontSize: '12px', color: '#7878a0' }}>
+  {avgRating ? `⭐ ${avgRating} (${reviews.length} hodnotení)` : 'Zatiaľ bez hodnotení'}
+</div></div>
                   <div style={{ fontSize: '12px', color: '#7878a0' }}>
                     {avgRating ? `⭐ ${avgRating} (${reviews.length} hodnotení)` : 'Zatiaľ bez hodnotení'}
                   </div>
