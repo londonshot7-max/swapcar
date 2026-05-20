@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function Exchange() {
   const [exchanges, setExchanges] = useState([])
@@ -16,12 +16,18 @@ export default function Exchange() {
   const [error, setError] = useState('')
   const { user } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     fetchAllListings()
     if (user) {
       fetchMyListings()
       fetchExchanges()
+      const wanted = searchParams.get('wanted')
+      if (wanted) {
+        setForm(f => ({ ...f, wanted_listing_id: wanted }))
+        setShowForm(true)
+      }
     } else {
       setLoading(false)
     }
@@ -54,9 +60,7 @@ export default function Exchange() {
     }
     setSubmitting(true)
     setError('')
-
     const wantedListing = allListings.find(l => l.id === form.wanted_listing_id)
-
     const { error: err } = await supabase.from('exchanges').insert({
       offering_listing_id: form.offering_listing_id,
       wanted_listing_id: form.wanted_listing_id,
@@ -65,7 +69,6 @@ export default function Exchange() {
       extra_payment: Number(form.extra_payment),
       message: form.message,
     })
-
     if (err) { setError(err.message); setSubmitting(false) }
     else {
       setShowForm(false)
@@ -93,24 +96,12 @@ export default function Exchange() {
   }
 
   const inputStyle = {
-    background: '#1a1a2e',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '8px',
-    color: '#eeeaf4',
-    padding: '12px 16px',
-    fontSize: '14px',
-    width: '100%',
-    outline: 'none',
-    boxSizing: 'border-box',
+    background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px',
+    color: '#eeeaf4', padding: '12px 16px', fontSize: '14px', width: '100%', outline: 'none', boxSizing: 'border-box',
   }
 
   const labelStyle = {
-    fontSize: '11px',
-    color: '#7878a0',
-    textTransform: 'uppercase',
-    letterSpacing: '0.08em',
-    marginBottom: '6px',
-    display: 'block',
+    fontSize: '11px', color: '#7878a0', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px', display: 'block',
   }
 
   return (
@@ -137,13 +128,10 @@ export default function Exchange() {
           <div style={{ fontSize: '40px', fontWeight: 800, marginBottom: '8px' }}>VÝMENY<span style={{ color: '#ff5500' }}> VOZIDIEL</span></div>
           <div style={{ fontSize: '14px', color: '#7878a0', marginBottom: '40px' }}>Vymeň svoje vozidlo za iné</div>
 
-          {/* FORM */}
           {showForm && (
             <div style={{ background: '#12121e', borderRadius: '16px', padding: '32px', border: '0.5px solid rgba(255,85,0,0.2)', marginBottom: '32px' }}>
               <div style={{ fontSize: '18px', fontWeight: 700, marginBottom: '24px' }}>Nový návrh výmeny</div>
-
               {error && <div style={{ background: 'rgba(255,50,50,0.1)', padding: '12px', borderRadius: '8px', color: '#ff6666', marginBottom: '16px', fontSize: '14px' }}>{error}</div>}
-
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
                   <label style={labelStyle}>Moje vozidlo (ponúkam)</label>
@@ -152,7 +140,6 @@ export default function Exchange() {
                     {myListings.map(l => <option key={l.id} value={l.id}>{l.title} — {l.price?.toLocaleString()} €</option>)}
                   </select>
                 </div>
-
                 <div>
                   <label style={labelStyle}>Vozidlo ktoré chcem (žiadam)</label>
                   <select style={{ ...inputStyle, cursor: 'pointer' }} value={form.wanted_listing_id} onChange={e => setForm({ ...form, wanted_listing_id: e.target.value })}>
@@ -160,18 +147,15 @@ export default function Exchange() {
                     {allListings.filter(l => l.user_id !== user?.id).map(l => <option key={l.id} value={l.id}>{l.title} — {l.price?.toLocaleString()} €</option>)}
                   </select>
                 </div>
-
                 <div>
                   <label style={labelStyle}>Doplatok (€) — nepovinné</label>
                   <input style={inputStyle} type="number" placeholder="0" value={form.extra_payment} onChange={e => setForm({ ...form, extra_payment: e.target.value })} />
                   <div style={{ fontSize: '12px', color: '#7878a0', marginTop: '6px' }}>Kladná hodnota = ty doplácaš, záporná = oni doplácajú</div>
                 </div>
-
                 <div>
                   <label style={labelStyle}>Správa</label>
                   <textarea style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }} placeholder="Pridaj správu k návrhu výmeny..." value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} />
                 </div>
-
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <button onClick={submitExchange} disabled={submitting} style={{ flex: 1, padding: '14px', background: '#ff5500', border: 'none', borderRadius: '10px', color: '#fff', fontSize: '15px', fontWeight: 700, cursor: 'pointer', opacity: submitting ? 0.7 : 1 }}>
                     {submitting ? 'Posielam...' : '🔄 Odoslať návrh'}
@@ -184,7 +168,6 @@ export default function Exchange() {
             </div>
           )}
 
-          {/* EXCHANGES LIST */}
           {!user ? (
             <div style={{ textAlign: 'center', padding: '80px 0', color: '#7878a0' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔄</div>
@@ -211,7 +194,6 @@ export default function Exchange() {
                       {getStatusLabel(ex.status)}
                     </div>
                   </div>
-
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                     <div style={{ flex: 1, background: '#0a0a12', borderRadius: '10px', padding: '16px', minWidth: '200px' }}>
                       <div style={{ fontSize: '11px', color: '#7878a0', marginBottom: '4px' }}>PONÚKA</div>
@@ -223,7 +205,6 @@ export default function Exchange() {
                       <div style={{ fontWeight: 600 }}>{ex.wanted?.title}</div>
                     </div>
                   </div>
-
                   {ex.extra_payment !== 0 && (
                     <div style={{ marginTop: '12px', fontSize: '14px', color: '#7878a0' }}>
                       Doplatok: <span style={{ color: ex.extra_payment > 0 ? '#ff5500' : '#22c55e', fontWeight: 600 }}>
@@ -231,11 +212,9 @@ export default function Exchange() {
                       </span>
                     </div>
                   )}
-
                   {ex.message && (
                     <div style={{ marginTop: '12px', fontSize: '14px', color: '#7878a0', fontStyle: 'italic' }}>"{ex.message}"</div>
                   )}
-
                   {ex.status === 'pending' && ex.wanted_user_id === user.id && (
                     <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
                       <button onClick={() => respondExchange(ex.id, 'accepted')} style={{ flex: 1, padding: '10px', background: '#22c55e', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 600, cursor: 'pointer' }}>
