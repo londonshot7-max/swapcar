@@ -7,11 +7,12 @@ import { supabase } from '../../lib/supabase'
 export default function Profile() {
   const router = useRouter()
   const [user, setUser] = useState(null)
-  const [profile, setProfile] = useState({ full_name: '', phone: '', city: '', bio: '' })
+  const [profile, setProfile] = useState({ full_name: '', phone: '', city: '', bio: '', avatar_url: '' })
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -19,7 +20,7 @@ export default function Profile() {
       if (!user) { router.push('/login'); return }
       setUser(user)
       const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-      if (prof) setProfile({ full_name: prof.full_name || '', phone: prof.phone || '', city: prof.city || '', bio: prof.bio || '' })
+      if (prof) setProfile({ full_name: prof.full_name || '', phone: prof.phone || '', city: prof.city || '', bio: prof.bio || '', avatar_url: prof.avatar_url || '' })
       const { data: myListings } = await supabase.from('listings').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
       setListings(myListings || [])
       setLoading(false)
@@ -33,6 +34,22 @@ export default function Profile() {
     setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
+  }
+
+  const uploadAvatar = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingAvatar(true)
+    const ext = file.name.split('.').pop()
+    const path = `avatars/${user.id}.${ext}`
+    const { error } = await supabase.storage.from('listings').upload(path, file, { upsert: true })
+    if (!error) {
+      const { data } = supabase.storage.from('listings').getPublicUrl(path)
+      const newUrl = data.publicUrl
+      setProfile(p => ({ ...p, avatar_url: newUrl }))
+      await supabase.from('profiles').upsert({ id: user.id, avatar_url: newUrl })
+    }
+    setUploadingAvatar(false)
   }
 
   const logout = async () => {
@@ -53,7 +70,7 @@ export default function Profile() {
         .prof-content { padding: 60px 48px; max-width: 900px; }
         .prof-title { font-size: 40px; font-weight: 800; margin-bottom: 40px; }
         .prof-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .prof-nav-label { }
+        .avatar-upload:hover .avatar-overlay { opacity: 1 !important; }
         @media (max-width: 768px) {
           .prof-nav { padding: 0 16px; }
           .prof-nav-label { display: none; }
@@ -73,7 +90,6 @@ export default function Profile() {
             <Link href="/dashboard">
               <button style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: '#eeeaf4', cursor: 'pointer', fontSize: '14px' }}>
                 <span className="prof-nav-label">Dashboard</span>
-                <span style={{ display: 'none' }} className="prof-nav-icon">🏠</span>
               </button>
             </Link>
             <button onClick={logout} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: '#ff5500', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}>
@@ -88,6 +104,25 @@ export default function Profile() {
           {/* FORM */}
           <div className="prof-card" style={{ background: '#12121e', borderRadius: '16px', padding: '32px', border: '0.5px solid rgba(255,255,255,0.07)', marginBottom: '24px' }}>
             <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '24px' }}>Osobné údaje</div>
+
+            {/* AVATAR */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '28px' }}>
+              <label className="avatar-upload" style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#1a1a2e', border: '2px solid rgba(255,255,255,0.1)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>
+                  {profile.avatar_url
+                    ? <img src={profile.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : '👤'}
+                </div>
+                <div className="avatar-overlay" style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity .2s', fontSize: '20px' }}>
+                  📷
+                </div>
+                <input type="file" accept="image/*" onChange={uploadAvatar} style={{ display: 'none' }} />
+              </label>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: '4px' }}>{profile.full_name || 'Tvoje meno'}</div>
+                <div style={{ fontSize: '13px', color: '#7878a0' }}>{uploadingAvatar ? '⏳ Nahrávam...' : 'Klikni na foto pre zmenu'}</div>
+              </div>
+            </div>
 
             <div className="prof-form-grid">
               <div>
