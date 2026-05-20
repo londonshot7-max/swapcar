@@ -110,6 +110,13 @@ export default function Dashboard() {
                 <div className="dash-card-sub">Upraviť údaje a inzeráty</div>
               </div>
             </Link>
+            <Link href="/alerts">
+              <div className="dash-card">
+                <div className="dash-card-icon">🔔</div>
+                <div className="dash-card-title">Upozornenia</div>
+                <div className="dash-card-sub">Nové vozidlá podľa kritérií</div>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
