@@ -46,7 +46,7 @@ const CAR_DATABASE = {
 const BRANDS = Object.keys(CAR_DATABASE).sort()
 
 export default function AddListing() {
-  const [form, setForm] = useState({ title:'', brand:'', model:'', year:'', mileage:'', fuel:'Benzín', transmission:'Manuálna', price:'', description:'' })
+  const [form, setForm] = useState({ title:'', brand:'', model:'', year:'', mileage:'', fuel:'Benzín', transmission:'Manuálna', price:'', description:'', city:'', latitude:null, longitude:null })
   const [images, setImages] = useState([])
   const [previews, setPreviews] = useState([])
   const [loading, setLoading] = useState(false)
@@ -221,7 +221,26 @@ export default function AddListing() {
                 </select>
               </div>
             </div>
-
+{/* MESTO + GPS */}
+<div style={{ marginBottom: '20px' }}>
+  <label style={labelStyle}>Mesto</label>
+  <input
+    style={inputStyle}
+    placeholder="napr. Bratislava, Košice, Žilina..."
+    value={form.city}
+    onChange={async (e) => {
+      set('city', e.target.value)
+      if (e.target.value.length > 2) {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${e.target.value},Slovakia&format=json&limit=1`)
+        const data = await res.json()
+        if (data[0]) {
+          set('latitude', parseFloat(data[0].lat))
+          set('longitude', parseFloat(data[0].lon))
+        }
+      }
+    }}
+  />
+</div>
             {/* CENA */}
             <div style={{ marginBottom: '20px' }}>
               <label style={labelStyle}>Cena (€)</label>
