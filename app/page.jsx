@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -42,6 +43,12 @@ export default function Home() {
         .btn-ghost:hover { background: var(--card2); }
         .btn-primary { padding: 8px 20px; border-radius: 8px; border: none; background: var(--orange); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
         .btn-primary:hover { background: var(--orange2); transform: translateY(-1px); }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+        .hamburger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
+        .mobile-menu { display: none; position: fixed; top: 68px; left: 0; right: 0; background: rgba(10,10,18,0.98); backdrop-filter: blur(16px); border-bottom: 0.5px solid var(--border); padding: 24px; z-index: 99; flex-direction: column; gap: 16px; }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a { font-size: 16px; font-weight: 500; color: var(--muted); padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+        .mobile-menu .mobile-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
         .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 120px 48px 80px; position: relative; overflow: hidden; }
         .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,85,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,85,0,0.04) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%); }
         .hero-glow { position: absolute; top: 20%; right: 5%; width: 600px; height: 600px; background: radial-gradient(ellipse, rgba(255,85,0,0.08) 0%, transparent 70%); pointer-events: none; }
@@ -106,17 +113,29 @@ export default function Home() {
         .footer-col a { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; transition: color .2s; }
         .footer-col a:hover { color: var(--text); }
         .footer-bottom { padding: 20px 48px; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+
         @media (max-width: 768px) {
           .nav { padding: 0 20px; }
           .nav-links { display: none; }
+          .nav-btns { display: none; }
+          .hamburger { display: flex; }
           .hero { padding: 100px 20px 60px; }
+          .hero-sub { font-size: 15px; }
+          .hero-cta { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .btn-big { width: 100%; text-align: center; }
+          .hero-trust { font-size: 12px; }
           .stats-bar { grid-template-columns: repeat(2, 1fr); }
-          .stat-item { padding: 20px; }
+          .stat-item { padding: 20px; border-right: 0.5px solid var(--border); }
+          .stat-number { font-size: 36px; }
           .features { padding: 60px 20px; }
           .features-grid { grid-template-columns: 1fr; }
-          .steps-grid { grid-template-columns: 1fr; }
-          footer { grid-template-columns: 1fr; padding: 32px 20px; }
-          .footer-bottom { padding: 16px 20px; flex-direction: column; gap: 8px; }
+          .how-section { padding: 60px 20px; }
+          .steps-grid { grid-template-columns: 1fr; gap: 24px; }
+          .cta-banner { padding: 60px 20px; }
+          .cta-btns { flex-direction: column; align-items: center; }
+          .btn-big-primary, .btn-big-ghost { width: 100%; }
+          footer { grid-template-columns: 1fr; padding: 32px 20px; gap: 24px; }
+          .footer-bottom { padding: 16px 20px; flex-direction: column; gap: 8px; text-align: center; }
         }
       `}</style>
 
@@ -134,7 +153,24 @@ export default function Home() {
           <Link href="/login"><button className="btn-ghost">Prihlásiť sa</button></Link>
           <Link href="/register"><button className="btn-primary">Registrovať sa zadarmo</button></Link>
         </div>
+        <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+          <span style={{transform: menuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none'}}></span>
+          <span style={{opacity: menuOpen ? 0 : 1}}></span>
+          <span style={{transform: menuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none'}}></span>
+        </button>
       </nav>
+
+      {/* MOBILE MENU */}
+      <div className={`mobile-menu ${menuOpen ? 'open' : ''}`}>
+        <Link href="/browse" onClick={() => setMenuOpen(false)}>Vozidlá</Link>
+        <Link href="/auctions" onClick={() => setMenuOpen(false)}>Dražby</Link>
+        <Link href="/exchange" onClick={() => setMenuOpen(false)}>Výmeny</Link>
+        <Link href="/how" onClick={() => setMenuOpen(false)}>Ako to funguje</Link>
+        <div className="mobile-btns">
+          <Link href="/login" onClick={() => setMenuOpen(false)}><button className="btn-ghost" style={{width:'100%'}}>Prihlásiť sa</button></Link>
+          <Link href="/register" onClick={() => setMenuOpen(false)}><button className="btn-primary" style={{width:'100%',padding:'12px 20px'}}>Registrovať sa zadarmo</button></Link>
+        </div>
+      </div>
 
       {/* HERO */}
       <section className="hero">
@@ -142,22 +178,15 @@ export default function Home() {
         <div className="hero-glow"></div>
         <div className="hero-content">
           <div className="hero-badge">Prvá slovenská platforma pre výmenu vozidiel</div>
-          <h1>
-            KÚP.<br />
-            <span className="accent">PREDAJ.</span><br />
-            <span className="thin">VYMEŇ.</span>
-          </h1>
+          <h1>KÚP.<br /><span className="accent">PREDAJ.</span><br /><span className="thin">VYMEŇ.</span></h1>
           <p className="hero-sub">
-            Autá, motorky, skútre. <strong>Dražby v reálnom čase.</strong> Výmena vozidla s doplatkom.
-            Showroom komunita. Všetko na jednom mieste — len pre Slovensko.
+            Autá, motorky, skútre. <strong>Dražby v reálnom čase.</strong> Výmena vozidla s doplatkom. Showroom komunita. Všetko na jednom mieste — len pre Slovensko.
           </p>
           <div className="hero-cta">
             <Link href="/browse"><button className="btn-big primary">Prehľadať vozidlá</button></Link>
             <Link href="/how"><button className="btn-big ghost">Ako to funguje →</button></Link>
             <div className="hero-trust">
-              <div className="trust-avatars">
-                <span>JK</span><span>MT</span><span>PB</span><span>+</span>
-              </div>
+              <div className="trust-avatars"><span>JK</span><span>MT</span><span>PB</span><span>+</span></div>
               Už 1 200+ registrovaných používateľov
             </div>
           </div>
@@ -166,22 +195,10 @@ export default function Home() {
 
       {/* STATS */}
       <div className="stats-bar">
-        <div className="stat-item">
-          <div className="stat-number">3<span>,</span>840</div>
-          <div className="stat-label">Aktívnych inzerátov</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-number">218</div>
-          <div className="stat-label">Prebiehajúcich dražieb</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-number">94</div>
-          <div className="stat-label">Návrhov na výmenu</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-number">1<span>,</span>207</div>
-          <div className="stat-label">Dokončených transakcií</div>
-        </div>
+        <div className="stat-item"><div className="stat-number">3<span>,</span>840</div><div className="stat-label">Aktívnych inzerátov</div></div>
+        <div className="stat-item"><div className="stat-number">218</div><div className="stat-label">Prebiehajúcich dražieb</div></div>
+        <div className="stat-item"><div className="stat-number">94</div><div className="stat-label">Návrhov na výmenu</div></div>
+        <div className="stat-item"><div className="stat-number">1<span>,</span>207</div><div className="stat-label">Dokončených transakcií</div></div>
       </div>
 
       {/* FEATURES */}
@@ -233,7 +250,7 @@ export default function Home() {
 
       {/* HOW IT WORKS */}
       <section className="how-section">
-        <div style={{textAlign: 'center'}}>
+        <div style={{textAlign:'center'}}>
           <div className="section-tag">Jednoduché</div>
           <h2>Ako to <span className="accent">funguje?</span></h2>
         </div>
@@ -294,7 +311,7 @@ export default function Home() {
         </div>
       </footer>
       <div className="footer-bottom">
-        <div>© 2026 <span style={{color: 'var(--orange)'}}>SwapCar.sk</span> — Všetky práva vyhradené</div>
+        <div>© 2026 <span style={{color:'var(--orange)'}}>SwapCar.sk</span> — Všetky práva vyhradené</div>
         <div>Vyrobené na Slovensku 🇸🇰</div>
       </div>
     </>
