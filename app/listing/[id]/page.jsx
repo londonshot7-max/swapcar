@@ -179,7 +179,7 @@ export default function Listing() {
                   {contacting ? 'Presmerovávam...' : '💬 Kontaktovať predajcu'}
                 </button>
               )}
-              <button style={{ width: '100%', padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', color: '#eeeaf4', fontSize: '16px', cursor: 'pointer' }}>
+              <button onClickstyle={{ width: '100%', padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', color: '#eeeaf4', fontSize: '16px', cursor: 'pointer' }}>
                 🔄 Navrhnúť výmenu
               </button>
             </div>
