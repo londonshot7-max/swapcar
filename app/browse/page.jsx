@@ -44,7 +44,7 @@ export default function Browse() {
       )
     }
     if (fuel !== 'Všetky') {
-      result = result.filter(l => l.fuel === fuel)
+      result = result.filter(l => l.fuel?.toLowerCase() === fuel.toLowerCase())
     }
     if (priceMin) result = result.filter(l => l.price >= Number(priceMin))
     if (priceMax) result = result.filter(l => l.price <= Number(priceMax))
