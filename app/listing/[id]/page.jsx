@@ -179,8 +179,9 @@ export default function Listing() {
                   {contacting ? 'Presmerovávam...' : '💬 Kontaktovať predajcu'}
                 </button>
               )}
-              <button onClickstyle={{ width: '100%', padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', color: '#eeeaf4', fontSize: '16px', cursor: 'pointer' }}>
-                🔄 Navrhnúť výmenu
+<button onClick={() => user ? router.push(`/exchange?wanted=${listing.id}`) : router.push('/login')} style={{ width: '100%', padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', color: '#eeeaf4', fontSize: '16px', cursor: 'pointer' }}>
+  🔄 Navrhnúť výmenu
+</button>                🔄 Navrhnúť výmenu
               </button>
             </div>
           </div>
