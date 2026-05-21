@@ -121,7 +121,6 @@ export default function Listing() {
 
         <div className="listing-content" style={{ maxWidth: '1100px', margin: '0 auto', padding: '60px 20px' }}>
           <div className="listing-grid">
-            {/* FOTKY */}
             <div>
               <div className="listing-main-img" style={{ height: '360px', background: '#12121e', borderRadius: '16px', overflow: 'hidden', border: '0.5px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {images.length > 0
@@ -138,7 +137,6 @@ export default function Listing() {
               )}
             </div>
 
-            {/* INFO */}
             <div>
               <div style={{ fontSize: '13px', color: '#7878a0', marginBottom: '8px' }}>{listing.brand} · {listing.model}</div>
               <div style={{ fontSize: '28px', fontWeight: 800, marginBottom: '16px' }}>{listing.title}</div>
@@ -153,7 +151,6 @@ export default function Listing() {
                 ))}
               </div>
 
-              {/* PREDAJCA */}
               <div style={{ background: '#12121e', borderRadius: '12px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.07)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#181827', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
                   {seller?.avatar_url ? <img src={seller.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '👤'}
@@ -179,14 +176,15 @@ export default function Listing() {
                   {contacting ? 'Presmerovávam...' : '💬 Kontaktovať predajcu'}
                 </button>
               )}
-<button onClick={() => user ? router.push(`/exchange?wanted=${listing.id}`) : router.push('/login')} style={{ width: '100%', padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', color: '#eeeaf4', fontSize: '16px', cursor: 'pointer' }}>
-  🔄 Navrhnúť výmenu
-</button>                🔄 Navrhnúť výmenu
+
+              <button
+                onClick={() => user ? router.push(`/exchange?wanted=${listing.id}`) : router.push('/login')}
+                style={{ width: '100%', padding: '16px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', color: '#eeeaf4', fontSize: '16px', cursor: 'pointer' }}>
+                🔄 Navrhnúť výmenu
               </button>
             </div>
           </div>
 
-          {/* POPIS */}
           {listing.description && (
             <div style={{ marginTop: '40px', background: '#12121e', borderRadius: '16px', padding: '32px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
               <div style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>Popis</div>
@@ -194,7 +192,6 @@ export default function Listing() {
             </div>
           )}
 
-          {/* HODNOTENIA */}
           <div style={{ marginTop: '40px', background: '#12121e', borderRadius: '16px', padding: '32px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <div>
