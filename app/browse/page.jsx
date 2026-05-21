@@ -25,6 +25,7 @@ export default function Browse() {
         .from('listings')
         .select('*')
         .eq('status', 'active')
+        .order('boosted', { ascending: false })
         .order('created_at', { ascending: false })
       setListings(data || [])
       setFiltered(data || [])
@@ -63,10 +64,12 @@ export default function Browse() {
   }
 
   const activeFiltersCount = [
-    search, 
-    fuel !== 'Všetky' ? fuel : '', 
+    search,
+    fuel !== 'Všetky' ? fuel : '',
     priceMin, priceMax, yearMin, yearMax, kmMax
   ].filter(Boolean).length
+
+  const isBoosted = (listing) => listing.boosted && new Date(listing.boosted_until) > new Date()
 
   return (
     <>
@@ -76,6 +79,8 @@ export default function Browse() {
         .filter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
         .listing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .filter-toggle { display: none; }
+        .listing-card { background: #12121e; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all .2s; }
+        .listing-card:hover { transform: translateY(-2px); }
         @media (max-width: 768px) {
           .browse-nav { padding: 0 20px; }
           .browse-nav-btns span { display: none; }
@@ -91,7 +96,6 @@ export default function Browse() {
 
       <div style={{ minHeight: '100vh', background: '#0a0a12', color: '#eeeaf4', fontFamily: 'sans-serif' }}>
 
-        {/* NAV */}
         <nav className="browse-nav">
           <Link href="/"><div style={{ fontSize: '26px', fontWeight: 800 }}>SWAP<span style={{ color: '#ff5500' }}>CAR</span>.SK</div></Link>
           <div className="browse-nav-btns" style={{ display: 'flex', gap: '12px' }}>
@@ -110,15 +114,12 @@ export default function Browse() {
           </div>
           <div style={{ fontSize: '14px', color: '#7878a0', marginBottom: '24px' }}>{filtered.length} inzerátov</div>
 
-          {/* FILTER TOGGLE — mobile only */}
           <button className="filter-toggle" onClick={() => setFiltersOpen(!filtersOpen)}>
             🔧 Filtre {activeFiltersCount > 0 && <span style={{ background: '#ff5500', borderRadius: '10px', padding: '1px 8px', fontSize: '12px' }}>{activeFiltersCount}</span>}
             <span style={{ marginLeft: 'auto' }}>{filtersOpen ? '▲' : '▼'}</span>
           </button>
 
-          {/* FILTER BOX */}
           <div className={`filter-box ${filtersOpen ? 'open' : ''}`} style={{ background: '#12121e', border: '0.5px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '24px', marginBottom: '36px' }}>
-
             <div style={{ marginBottom: '20px' }}>
               <label style={{ fontSize: '11px', color: '#7878a0', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px', display: 'block' }}>Hľadať</label>
               <input
@@ -164,21 +165,25 @@ export default function Browse() {
             </div>
           </div>
 
-          {/* GRID */}
           {loading && <div style={{ color: '#7878a0' }}>Načítavam...</div>}
 
           <div className="listing-grid">
             {filtered.map(listing => (
               <Link href={`/listing/${listing.id}`} key={listing.id}>
-                <div style={{ background: '#12121e', borderRadius: '16px', overflow: 'hidden', border: '0.5px solid rgba(255,255,255,0.07)', cursor: 'pointer', transition: 'all .2s' }}>
-                  <div style={{ height: '180px', background: '#181827', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', overflow: 'hidden' }}>
+                <div className="listing-card" style={{ border: `1.5px solid ${isBoosted(listing) ? 'rgba(255,85,0,0.4)' : 'rgba(255,255,255,0.07)'}` }}>
+                  <div style={{ height: '180px', background: '#181827', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '48px', overflow: 'hidden', position: 'relative' }}>
                     {listing.images?.[0]
                       ? <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       : '🚗'}
+                    {isBoosted(listing) && (
+                      <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#ff5500', borderRadius: '6px', padding: '3px 8px', fontSize: '11px', fontWeight: 700, color: '#fff' }}>
+                        🚀 BOOST
+                      </div>
+                    )}
                   </div>
                   <div style={{ padding: '20px' }}>
-                    <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>
-                      {listing.verified_seller && <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: 600 }}>✓ Overený predajca</div>}{listing.title}</div>
+                    {listing.verified_seller && <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: 600, marginBottom: '4px' }}>✓ Overený predajca</div>}
+                    <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '4px' }}>{listing.title}</div>
                     <div style={{ fontSize: '13px', color: '#7878a0', marginBottom: '12px' }}>
                       {listing.year} · {listing.mileage?.toLocaleString()} km · {listing.fuel}
                     </div>
