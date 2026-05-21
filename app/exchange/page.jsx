@@ -1,11 +1,11 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../lib/auth-context'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function Exchange() {
+function ExchangeContent() {
   const [exchanges, setExchanges] = useState([])
   const [myListings, setMyListings] = useState([])
   const [allListings, setAllListings] = useState([])
@@ -232,5 +232,13 @@ export default function Exchange() {
         </div>
       </div>
     </>
+  )
+}
+
+export default function Exchange() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#0a0a12', color: '#eeeaf4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Načítavam...</div>}>
+      <ExchangeContent />
+    </Suspense>
   )
 }
