@@ -14,6 +14,7 @@ export default function Profile() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [deletingId, setDeletingId] = useState(null)
 
   useEffect(() => {
     if (!loading && !user) router.push('/login')
@@ -53,6 +54,14 @@ export default function Profile() {
       await supabase.from('profiles').update({ avatar_url: newUrl }).eq('id', user.id)
     }
     setUploadingAvatar(false)
+  }
+
+  const deleteListing = async (id) => {
+    if (!confirm('Naozaj chceš zmazať tento inzerát?')) return
+    setDeletingId(id)
+    await supabase.from('listings').delete().eq('id', id)
+    setListings(listings.filter(l => l.id !== id))
+    setDeletingId(null)
   }
 
   const logout = async () => {
@@ -105,7 +114,6 @@ export default function Profile() {
           <div className="prof-card" style={{ background: '#12121e', borderRadius: '16px', padding: '32px', border: '0.5px solid rgba(255,255,255,0.07)', marginBottom: '24px' }}>
             <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '24px' }}>Osobné údaje</div>
 
-            {/* AVATAR */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '28px' }}>
               <label className="avatar-upload" style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }}>
                 <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#1a1a2e', border: '2px solid rgba(255,255,255,0.1)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>
@@ -162,6 +170,7 @@ export default function Profile() {
             </button>
           </div>
 
+          {/* MOJE INZERÁTY */}
           <div className="prof-card" style={{ background: '#12121e', borderRadius: '16px', padding: '32px', border: '0.5px solid rgba(255,255,255,0.07)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <div style={{ fontSize: '16px', fontWeight: 700 }}>Moje inzeráty ({listings.length})</div>
@@ -173,15 +182,26 @@ export default function Profile() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {listings.map(l => (
-                  <Link href={`/listing/${l.id}`} key={l.id}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#0a0a12', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', cursor: 'pointer', gap: '12px' }}>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontWeight: 600, marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</div>
-                        <div style={{ fontSize: '13px', color: '#7878a0' }}>{l.year} · {l.mileage?.toLocaleString()} km</div>
-                      </div>
-                      <div style={{ fontSize: '18px', fontWeight: 800, color: '#ff5500', whiteSpace: 'nowrap' }}>{l.price?.toLocaleString()} €</div>
+                  <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#0a0a12', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', gap: '12px' }}>
+                    <Link href={`/listing/${l.id}`} style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</div>
+                      <div style={{ fontSize: '13px', color: '#7878a0' }}>{l.year} · {l.mileage?.toLocaleString()} km</div>
+                    </Link>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                      <div style={{ fontSize: '18px', fontWeight: 800, color: '#ff5500' }}>{l.price?.toLocaleString()} €</div>
+                      <Link href={`/edit-listing/${l.id}`}>
+                        <button style={{ padding: '6px 12px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '6px', color: '#eeeaf4', cursor: 'pointer', fontSize: '12px' }}>
+                          ✏️ Upraviť
+                        </button>
+                      </Link>
+                      <button
+                        onClick={() => deleteListing(l.id)}
+                        disabled={deletingId === l.id}
+                        style={{ padding: '6px 12px', background: 'transparent', border: '1px solid rgba(255,50,50,0.3)', borderRadius: '6px', color: '#ff6666', cursor: 'pointer', fontSize: '12px', opacity: deletingId === l.id ? 0.5 : 1 }}>
+                        {deletingId === l.id ? '...' : '🗑️ Zmazať'}
+                      </button>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}
