@@ -79,7 +79,7 @@ export default function Profile() {
     <>
       <style>{`
         .prof-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 68px; border-bottom: 0.5px solid rgba(255,255,255,0.07); }
-        .prof-content { padding: 60px 48px; max-width: 900px; }
+        .prof-content { padding: 60px 48px; max-width: 1100px; }
         .prof-title { font-size: 40px; font-weight: 800; margin-bottom: 40px; }
         .prof-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .avatar-upload:hover .avatar-overlay { opacity: 1 !important; }
